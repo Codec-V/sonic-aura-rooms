@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -7,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { getRoom, getRoomUsers } from '@/services/mockData';
 import { RoomProvider, useRoomContext } from '@/context/RoomContext';
 import SpeakersGrid from '@/components/SpeakersGrid';
-import { ArrowLeft, Mic, MicOff, Hand, Users, Share2, MessageSquare, Clock, Info, ChevronDown, ChevronUp, Heart } from 'lucide-react';
+import { ArrowLeft, Mic, MicOff, Hand, Users, Share2, MessageSquare, Clock, Info, ChevronDown, ChevronUp, Heart, ChevronRight, Send } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
