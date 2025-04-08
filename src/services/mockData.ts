@@ -129,6 +129,38 @@ export const roomUsers: Record<string, User[]> = {
       isSpeaking: false,
       isHost: false,
       role: "listener"
+    },
+    {
+      id: "listener5",
+      username: "Emma Rodriguez",
+      isMuted: true,
+      isSpeaking: false,
+      isHost: false,
+      role: "listener"
+    },
+    {
+      id: "listener6",
+      username: "Liam Thompson",
+      isMuted: true,
+      isSpeaking: false,
+      isHost: false, 
+      role: "listener"
+    },
+    {
+      id: "listener7",
+      username: "Ava Martin",
+      isMuted: true,
+      isSpeaking: false,
+      isHost: false,
+      role: "listener"
+    },
+    {
+      id: "listener8",
+      username: "William Chen",
+      isMuted: true,
+      isSpeaking: false,
+      isHost: false,
+      role: "listener"
     }
   ]
 };

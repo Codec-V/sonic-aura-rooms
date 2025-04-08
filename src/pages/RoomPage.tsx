@@ -6,9 +6,15 @@ import { Badge } from '@/components/ui/badge';
 import { getRoom, getRoomUsers } from '@/services/mockData';
 import { RoomProvider, useRoomContext } from '@/context/RoomContext';
 import SpeakersGrid from '@/components/SpeakersGrid';
-import { ArrowLeft, Mic, MicOff, Hand, Users, Share2, MessageSquare, Clock, Info, ChevronDown, ChevronUp, Heart, ChevronRight, Send } from 'lucide-react';
+import { 
+  ArrowLeft, Mic, MicOff, Hand, Users, Share2, MessageSquare, Clock, 
+  Info, ChevronDown, ChevronUp, Heart, ChevronRight, Send, Smile, 
+  Image, PaperclipIcon, ThumbsUp, Loader2
+} from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 
 const RoomControls = () => {
   const { currentUser, isHandRaised, toggleMute, raiseHand, lowerHand, leaveRoom } = useRoomContext();
@@ -79,21 +85,115 @@ const RoomControls = () => {
   );
 };
 
+// Enhanced chat message type for more features
+type ChatMessage = {
+  id: number;
+  user: string;
+  text: string;
+  avatar?: string;
+  timestamp: string;
+  likes?: number;
+  isCurrentUser?: boolean;
+};
+
 const ChatSection = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [message, setMessage] = useState('');
+  const [isTyping, setIsTyping] = useState(false);
+  const [messages, setMessages] = useState<ChatMessage[]>([
+    { 
+      id: 1, 
+      user: 'Maya Johnson', 
+      text: 'Has anyone tried the new audio processing software?', 
+      timestamp: '10:32 AM',
+      likes: 2
+    },
+    { 
+      id: 2, 
+      user: 'Alex Turner', 
+      text: "Yes, I've been testing it for a few days. The noise cancellation is impressive!", 
+      timestamp: '10:35 AM',
+      likes: 3
+    },
+    { 
+      id: 3, 
+      user: 'Ethan Zhang', 
+      text: "I'd love to hear more about your experience with it.", 
+      timestamp: '10:38 AM' 
+    },
+    { 
+      id: 4, 
+      user: 'Sarah Miller', 
+      text: "I'm planning to use it for our next podcast episode. Any tips for optimal settings?", 
+      timestamp: '10:45 AM' 
+    }
+  ]);
   
-  const messages = [
-    { id: 1, user: 'Maya Johnson', text: 'Has anyone tried the new audio processing software?' },
-    { id: 2, user: 'Alex Turner', text: 'Yes, I\'ve been testing it for a few days. The noise cancellation is impressive!' },
-    { id: 3, user: 'Ethan Zhang', text: 'I\'d love to hear more about your experience with it.' }
-  ];
+  const { toast } = useToast();
   
   const handleSendMessage = () => {
     if (message.trim()) {
-      // In a real app, this would send the message
-      setMessage('');
+      setIsTyping(true);
+      
+      // Simulate delay for typing animation
+      setTimeout(() => {
+        const newMessage: ChatMessage = {
+          id: messages.length + 1,
+          user: 'You',
+          text: message,
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          isCurrentUser: true
+        };
+        
+        setMessages([...messages, newMessage]);
+        setMessage('');
+        setIsTyping(false);
+        
+        // Simulate an automatic response after a brief delay
+        simulateReply();
+      }, 500);
     }
+  };
+  
+  const simulateReply = () => {
+    const responses = [
+      "That's a great point!",
+      "I agree with what you're saying.",
+      "Interesting perspective, thanks for sharing.",
+      "Has anyone else experienced this?",
+      "I'd like to add to that discussion point."
+    ];
+    
+    const users = ["Maya Johnson", "Alex Turner", "Ethan Zhang", "Sarah Miller"];
+    
+    setTimeout(() => {
+      const newReply: ChatMessage = {
+        id: messages.length + 2,
+        user: users[Math.floor(Math.random() * users.length)],
+        text: responses[Math.floor(Math.random() * responses.length)],
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      };
+      
+      setMessages(prev => [...prev, newReply]);
+      
+      toast({
+        title: "New Message",
+        description: `${newReply.user}: ${newReply.text}`,
+      });
+    }, 3000);
+  };
+  
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSendMessage();
+    }
+  };
+  
+  const handleLikeMessage = (messageId: number) => {
+    setMessages(prev => prev.map(msg => 
+      msg.id === messageId ? { ...msg, likes: (msg.likes || 0) + 1 } : msg
+    ));
   };
   
   return (
@@ -104,42 +204,121 @@ const ChatSection = () => {
           variant="ghost" 
           size="icon" 
           onClick={() => setIsOpen(!isOpen)}
-          className="h-20 w-10 rounded-l-lg rounded-r-none"
+          className={`h-20 w-10 rounded-l-lg rounded-r-none transition-all duration-300 ${isOpen ? 'bg-primary/10' : 'hover:bg-primary/5'}`}
         >
-          {isOpen ? <ChevronRight className="h-5 w-5" /> : <MessageSquare className="h-5 w-5" />}
+          {isOpen ? (
+            <ChevronRight className="h-5 w-5 animate-pulse" />
+          ) : (
+            <div className="relative">
+              <MessageSquare className="h-5 w-5" />
+              <span className="absolute -top-1 -right-1 bg-primary text-white text-xs rounded-full h-4 w-4 flex items-center justify-center animate-bounce">
+                {messages.length}
+              </span>
+            </div>
+          )}
         </Button>
       </div>
       
       <div className="h-full bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm shadow-lg flex flex-col">
         <div className="p-4 border-b dark:border-slate-700">
-          <h3 className="font-medium">Chat</h3>
+          <h3 className="font-medium flex items-center">
+            <MessageSquare className="h-4 w-4 mr-2 text-primary" />
+            Room Chat
+            <Badge variant="outline" className="ml-2 bg-green-500/10 text-green-500 dark:bg-green-500/20 dark:text-green-400">
+              Live
+            </Badge>
+          </h3>
         </div>
         
         <div className="flex-grow overflow-auto p-4 space-y-4">
           {messages.map(msg => (
-            <div key={msg.id} className="bg-slate-100 dark:bg-slate-700 rounded-lg p-3">
-              <div className="font-medium text-sm text-slate-700 dark:text-slate-300">{msg.user}</div>
-              <div className="text-sm mt-1">{msg.text}</div>
+            <div 
+              key={msg.id} 
+              className={`group flex gap-3 max-w-[85%] animate-fade-in ${msg.isCurrentUser ? 'ml-auto' : ''}`}
+            >
+              {!msg.isCurrentUser && (
+                <Avatar className="h-8 w-8 flex-shrink-0">
+                  <AvatarFallback className="bg-gradient-to-br from-sonic-blue to-sonic-indigo text-white text-xs">
+                    {msg.user.split(' ').map(n => n[0]).join('')}
+                  </AvatarFallback>
+                </Avatar>
+              )}
+              
+              <div>
+                {!msg.isCurrentUser && (
+                  <div className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">{msg.user}</div>
+                )}
+                
+                <div className={`relative group ${
+                  msg.isCurrentUser 
+                    ? 'bg-primary/10 text-primary-foreground rounded-t-lg rounded-l-lg' 
+                    : 'bg-slate-100 dark:bg-slate-700 rounded-t-lg rounded-r-lg'
+                } p-3`}>
+                  <div className="text-sm">{msg.text}</div>
+                  
+                  <div className="flex items-center justify-between mt-1">
+                    <span className="text-[10px] text-slate-500">{msg.timestamp}</span>
+                    
+                    {!msg.isCurrentUser && (
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                        onClick={() => handleLikeMessage(msg.id)}
+                      >
+                        <ThumbsUp className="h-3 w-3" />
+                        {msg.likes && <span className="ml-1 text-[10px]">{msg.likes}</span>}
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              </div>
             </div>
           ))}
+          
+          {isTyping && (
+            <div className="flex items-center gap-2 text-sm text-slate-500">
+              <Loader2 className="h-3 w-3 animate-spin" />
+              <span>Typing...</span>
+            </div>
+          )}
         </div>
         
-        <div className="p-4 border-t dark:border-slate-700 flex gap-2">
-          <input
-            type="text"
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            placeholder="Type a message..."
-            className="flex-grow bg-slate-100 dark:bg-slate-700 border-none rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-          />
-          <Button 
-            variant="default" 
-            size="icon" 
-            className="rounded-full"
-            onClick={handleSendMessage}
-          >
-            <Send className="h-4 w-4" />
-          </Button>
+        <div className="p-4 border-t dark:border-slate-700">
+          <div className="flex items-center gap-2 mb-2">
+            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full">
+              <Smile className="h-4 w-4 text-slate-500" />
+            </Button>
+            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full">
+              <Image className="h-4 w-4 text-slate-500" />
+            </Button>
+            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full">
+              <PaperclipIcon className="h-4 w-4 text-slate-500" />
+            </Button>
+          </div>
+          
+          <div className="flex gap-2">
+            <Textarea
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="Type a message..."
+              className="flex-grow resize-none bg-slate-100 dark:bg-slate-700 border-none rounded-xl px-4 py-2 text-sm min-h-[40px] max-h-[120px] focus-visible:ring-1 focus-visible:ring-primary"
+            />
+            <Button 
+              variant="default" 
+              size="icon" 
+              className="rounded-full h-10 w-10 bg-primary hover:bg-primary/90 transition-colors"
+              onClick={handleSendMessage}
+              disabled={!message.trim() || isTyping}
+            >
+              {isTyping ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Send className="h-4 w-4" />
+              )}
+            </Button>
+          </div>
         </div>
       </div>
     </div>

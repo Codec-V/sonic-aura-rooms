@@ -148,10 +148,91 @@
   .wave-animation {
     @apply animate-wave;
   }
+  
+  .chat-bubble-in {
+    animation: chat-bubble-in 0.3s ease-out forwards;
+  }
+  
+  .chat-bubble-out {
+    animation: chat-bubble-out 0.3s ease-in forwards;
+  }
+  
+  .typing-animation::after {
+    content: '';
+    animation: typing-dots 1.4s infinite both;
+  }
 }
 
 @keyframes shine {
   100% {
     left: 200%;
   }
+}
+
+@keyframes chat-bubble-in {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes chat-bubble-out {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
+@keyframes typing-dots {
+  0%, 20% {
+    content: '.';
+  }
+  40% {
+    content: '..';
+  }
+  60%, 100% {
+    content: '...';
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.8;
+  }
+  70% {
+    transform: scale(1);
+    opacity: 0.4;
+  }
+  100% {
+    transform: scale(1.2);
+    opacity: 0;
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.3s ease-out forwards;
+}
+
+.animate-pulse-ring {
+  animation: pulse-ring 1.5s cubic-bezier(0.24, 0.97, 0.81, 1.2) infinite;
 }
