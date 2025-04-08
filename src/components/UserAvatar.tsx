@@ -41,10 +41,10 @@ const UserAvatar = ({
         className={cn(
           sizeClasses[size],
           "rounded-full flex items-center justify-center relative overflow-hidden",
-          "bg-gradient-to-br from-sonic-purple to-sonic-pink border-2",
-          "border-white dark:border-sonic-dark",
-          isHost && "ring-2 ring-sonic-amber",
-          isSpeaking && "speaking-animation animate-breathe",
+          "bg-gradient-to-br from-sonic-blue to-sonic-indigo border-2",
+          "border-white dark:border-slate-900",
+          isHost && "ring-2 ring-sonic-gold",
+          isSpeaking && "speaking-animation animate-soft-bounce",
           "transition-all duration-300"
         )}
       >
@@ -60,13 +60,13 @@ const UserAvatar = ({
       </div>
       
       {isMuted && (
-        <div className="absolute bottom-0 right-0 bg-red-500 rounded-full p-1">
+        <div className="absolute bottom-0 right-0 bg-sonic-coral rounded-full p-1">
           <MicOff className="h-3 w-3 text-white" />
         </div>
       )}
       
       {isHost && (
-        <div className="absolute -top-1 -right-1 bg-sonic-amber rounded-full px-1.5 py-0.5 text-[10px] font-bold text-white">
+        <div className="absolute -top-1 -right-1 bg-sonic-gold rounded-full px-1.5 py-0.5 text-[10px] font-bold text-white">
           HOST
         </div>
       )}

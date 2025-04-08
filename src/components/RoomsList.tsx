@@ -20,12 +20,12 @@ const RoomsList = ({ rooms }: RoomsListProps) => {
   return (
     <div className="w-full animate-fade-in">
       <Tabs defaultValue="All" className="w-full">
-        <TabsList className="mb-6 bg-slate-100/80 dark:bg-slate-800/50 p-1 rounded-full mx-auto flex w-fit">
+        <TabsList className="mb-8 bg-muted/80 dark:bg-slate-800/50 p-1 rounded-full mx-auto flex w-fit">
           {categories.map(category => (
             <TabsTrigger
               key={category}
               value={category}
-              className="rounded-full data-[state=active]:bg-white dark:data-[state=active]:bg-sonic-dark-purple data-[state=active]:shadow-sm px-4 py-2"
+              className="rounded-full data-[state=active]:bg-white dark:data-[state=active]:bg-slate-900 data-[state=active]:shadow-sm px-4 py-2"
             >
               {category}
             </TabsTrigger>

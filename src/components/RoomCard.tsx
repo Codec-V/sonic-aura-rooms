@@ -27,20 +27,20 @@ interface RoomCardProps {
 const RoomCard = ({ room }: RoomCardProps) => {
   return (
     <Link to={`/room/${room.id}`} className="block group">
-      <Card className="overflow-hidden transition-all duration-300 border border-slate-200 dark:border-slate-800 hover:border-sonic-teal/50 dark:hover:border-sonic-teal/50 hover:shadow-lg hover:shadow-sonic-teal/10 glass-card group-hover:scale-[1.02] animate-float-up">
-        <div className="p-6 flex flex-col h-full">
+      <Card className="overflow-hidden transition-all duration-300 border border-slate-200 dark:border-slate-800 hover:border-sonic-mint/50 dark:hover:border-sonic-mint/50 hover:shadow-lg hover:shadow-sonic-blue/10 glass-card group-hover:scale-[1.02] animate-float-up p-5 rounded-2xl">
+        <div className="flex flex-col h-full">
           <div className="flex justify-between items-start mb-4">
-            <Badge variant="outline" className="bg-sonic-purple/10 text-sonic-purple dark:bg-sonic-purple/20 dark:text-sonic-teal font-medium">
+            <Badge variant="outline" className="bg-sonic-blue/10 text-sonic-blue dark:bg-sonic-blue/20 dark:text-sonic-mint font-medium rounded-full px-3">
               {room.category}
             </Badge>
             {room.isPrivate && (
-              <div className="bg-sonic-amber/10 p-1.5 rounded-full">
-                <Lock className="h-4 w-4 text-sonic-amber" />
+              <div className="bg-sonic-gold/10 p-1.5 rounded-full">
+                <Lock className="h-4 w-4 text-sonic-gold" />
               </div>
             )}
           </div>
           
-          <h3 className="text-xl font-semibold mb-3 line-clamp-2 group-hover:sonic-gradient-text transition-all duration-300">
+          <h3 className="text-xl font-semibold mb-3 line-clamp-2 group-hover:sonic-gradient-alt-text transition-all duration-300">
             {room.title}
           </h3>
           
@@ -52,12 +52,12 @@ const RoomCard = ({ room }: RoomCardProps) => {
           
           <div className="mt-auto flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <div className="flex items-center bg-sonic-pink/10 dark:bg-sonic-pink/20 px-2.5 py-1 rounded-full">
-                <Mic className="h-4 w-4 mr-1.5 text-sonic-pink" />
+              <div className="flex items-center bg-sonic-coral/10 dark:bg-sonic-coral/20 px-2.5 py-1 rounded-full">
+                <Mic className="h-4 w-4 mr-1.5 text-sonic-coral" />
                 <span className="text-sm font-medium">{room.participants.speakers}</span>
               </div>
-              <div className="flex items-center bg-sonic-amber/10 dark:bg-sonic-amber/20 px-2.5 py-1 rounded-full">
-                <Users className="h-4 w-4 mr-1.5 text-sonic-amber" />
+              <div className="flex items-center bg-sonic-gold/10 dark:bg-sonic-gold/20 px-2.5 py-1 rounded-full">
+                <Users className="h-4 w-4 mr-1.5 text-sonic-gold" />
                 <span className="text-sm font-medium">{room.participants.listeners}</span>
               </div>
             </div>

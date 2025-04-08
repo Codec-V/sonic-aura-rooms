@@ -1,77 +1,78 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --background: 210 33% 99%;
+    --foreground: 222 47% 11%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 222 47% 11%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 222 47% 11%;
 
-    --primary: 222.2 47.4% 11.2%;
+    --primary: 210 100% 59%;
     --primary-foreground: 210 40% 98%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 180 65% 60%;
+    --secondary-foreground: 222 47% 11%;
 
     --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted-foreground: 215 16% 47%;
 
     --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent-foreground: 222 47% 11%;
 
-    --destructive: 0 84.2% 60.2%;
+    --destructive: 0 84% 60%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 222 84% 5%;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
 
     --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-foreground: 240 5% 26%;
+    --sidebar-primary: 240 6% 10%;
     --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-accent: 240 5% 96%;
+    --sidebar-accent-foreground: 240 6% 10%;
     --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-ring: 217 91% 60%;
   }
 
   .dark {
-    --background: 224 71% 4%;
+    --background: 220 40% 10%;
     --foreground: 210 20% 98%;
 
-    --card: 224 71% 4%;
+    --card: 220 40% 13%;
     --card-foreground: 210 20% 98%;
 
-    --popover: 224 71% 4%;
+    --popover: 220 40% 13%;
     --popover-foreground: 210 20% 98%;
 
-    --primary: 263 70% 50%;
+    --primary: 210 100% 59%;
     --primary-foreground: 210 20% 98%;
 
-    --secondary: 215 27.9% 16.9%;
+    --secondary: 215 28% 17%;
     --secondary-foreground: 210 20% 98%;
 
-    --muted: 215 27.9% 16.9%;
-    --muted-foreground: 217.9 10.6% 64.9%;
+    --muted: 215 28% 17%;
+    --muted-foreground: 218 11% 65%;
 
-    --accent: 263 70% 50%;
+    --accent: 210 100% 59%;
     --accent-foreground: 210 20% 98%;
 
-    --destructive: 0 62.8% 30.6%;
+    --destructive: 0 63% 31%;
     --destructive-foreground: 210 20% 98%;
 
-    --border: 215 27.9% 16.9%;
-    --input: 215 27.9% 16.9%;
-    --ring: 263 70% 50%;
+    --border: 215 28% 17%;
+    --input: 215 28% 17%;
+    --ring: 210 100% 59%;
   }
 }
 
@@ -86,7 +87,7 @@
   }
   
   h1, h2, h3, h4, h5, h6 {
-    @apply tracking-tight;
+    @apply tracking-tight font-semibold;
   }
 }
 
@@ -103,16 +104,20 @@
     @apply bg-clip-text text-transparent bg-gradient-sonic-alt;
   }
   
+  .warm-gradient-text {
+    @apply bg-clip-text text-transparent bg-gradient-warm;
+  }
+  
   .active-mic {
     @apply relative;
   }
   
   .active-mic::before {
-    @apply content-[''] absolute -inset-1 rounded-full animate-pulse-ring bg-sonic-teal/50;
+    @apply content-[''] absolute -inset-1 rounded-full animate-pulse-ring bg-sonic-mint/50;
   }
   
   .speaking-animation::after {
-    @apply content-[''] absolute -inset-2 rounded-full animate-pulse-ring bg-sonic-pink/50;
+    @apply content-[''] absolute -inset-2 rounded-full animate-pulse-ring bg-sonic-coral/50;
   }
   
   .btn-shine {
@@ -125,11 +130,23 @@
   }
   
   .shadow-sonic {
-    @apply shadow-lg shadow-sonic-purple/20;
+    @apply shadow-lg shadow-sonic-blue/20;
   }
   
   .hover-lift {
     @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-sonic;
+  }
+  
+  .card-hover {
+    @apply transition-all duration-300 hover:shadow-md hover:bg-white dark:hover:bg-slate-800/60;
+  }
+  
+  .btn-bounce {
+    @apply transition-transform active:scale-95;
+  }
+  
+  .wave-animation {
+    @apply animate-wave;
   }
 }
 

@@ -64,12 +64,13 @@ export default {
           ring: "hsl(var(--sidebar-ring))",
         },
         sonic: {
-          teal: "#00FFD1",
-          pink: "#FF1FB3",
-          amber: "#FFB84C",
-          purple: "#5D12D2",
-          dark: "#101935",
-          "dark-purple": "#1E0E3E",
+          blue: "#4A90E2",
+          coral: "#FF6B6B",
+          mint: "#50E3C2",
+          gold: "#F4BE5E",
+          indigo: "#5E5CE6",
+          dark: "#161C2D",
+          "dark-blue": "#252D3F",
         },
       },
       borderRadius: {
@@ -123,6 +124,17 @@ export default {
           "0%, 100%": { transform: "scale(1)" },
           "50%": { transform: "scale(1.05)" },
         },
+        "soft-bounce": {
+          "0%, 100%": { transform: "translateY(0)" },
+          "50%": { transform: "translateY(-10px)" },
+        },
+        "wave": {
+          "0%": { transform: "translateY(0)" },
+          "25%": { transform: "translateY(-5px)" },
+          "50%": { transform: "translateY(0)" },
+          "75%": { transform: "translateY(5px)" },
+          "100%": { transform: "translateY(0)" },
+        }
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -136,12 +148,16 @@ export default {
         "fade-out": "fade-out 0.3s ease-out",
         "scale-in": "scale-in 0.2s ease-out",
         breathe: "breathe 3s ease-in-out infinite",
+        "soft-bounce": "soft-bounce 3s ease-in-out infinite",
+        "wave": "wave 2s ease-in-out infinite",
       },
       backgroundImage: {
         "gradient-sonic":
-          "linear-gradient(135deg, #5D12D2 0%, #FF1FB3 100%)",
+          "linear-gradient(135deg, #4A90E2 0%, #5E5CE6 100%)",
         "gradient-sonic-alt":
-          "linear-gradient(135deg, #00FFD1 0%, #5D12D2 100%)",
+          "linear-gradient(135deg, #50E3C2 0%, #4A90E2 100%)",
+        "gradient-warm":
+          "linear-gradient(135deg, #FF6B6B 0%, #F4BE5E 100%)",
       },
     },
   },

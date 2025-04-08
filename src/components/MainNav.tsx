@@ -25,13 +25,13 @@ const MainNav = () => {
   };
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md bg-white/70 dark:bg-sonic-dark/70 border-b border-slate-200/50 dark:border-slate-700/50">
+    <nav className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md bg-white/70 dark:bg-slate-900/70 border-b border-slate-200/50 dark:border-slate-700/50">
       <div className="container mx-auto px-4 py-3 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2 animate-fade-in">
           <div className="w-10 h-10 rounded-full bg-gradient-sonic flex items-center justify-center">
-            <span className="text-white font-bold text-lg">SA</span>
+            <span className="text-white font-bold text-lg">WC</span>
           </div>
-          <span className="font-bold text-xl sonic-gradient-text">SonicAura</span>
+          <span className="font-bold text-xl sonic-gradient-text">WaveChat</span>
         </Link>
         
         <div className="flex items-center gap-3">
@@ -39,7 +39,7 @@ const MainNav = () => {
             variant="ghost" 
             size="icon" 
             onClick={handleCreateRoom}
-            className="relative hover:bg-slate-100 dark:hover:bg-slate-800 transition-all duration-200"
+            className="relative hover:bg-slate-100 dark:hover:bg-slate-800 transition-all duration-200 rounded-full"
           >
             <Plus className="w-5 h-5" />
           </Button>
@@ -47,10 +47,10 @@ const MainNav = () => {
           <Button 
             variant="ghost" 
             size="icon"
-            className="relative hover:bg-slate-100 dark:hover:bg-slate-800 transition-all duration-200"
+            className="relative hover:bg-slate-100 dark:hover:bg-slate-800 transition-all duration-200 rounded-full"
           >
             <Bell className="w-5 h-5" />
-            <span className="absolute top-1 right-1 w-2 h-2 bg-sonic-pink rounded-full"></span>
+            <span className="absolute top-1 right-1 w-2 h-2 bg-sonic-coral rounded-full"></span>
           </Button>
           
           <ThemeToggle />
@@ -62,7 +62,7 @@ const MainNav = () => {
                 size="icon" 
                 className="relative overflow-hidden rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-all duration-200"
               >
-                <div className="w-9 h-9 rounded-full bg-gradient-to-br from-sonic-purple to-sonic-pink flex items-center justify-center">
+                <div className="w-9 h-9 rounded-full bg-gradient-to-br from-sonic-blue to-sonic-indigo flex items-center justify-center">
                   <User className="w-5 h-5 text-white" />
                 </div>
               </Button>
