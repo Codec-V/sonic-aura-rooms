@@ -7,30 +7,42 @@ const ThemeToggle = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
 
   useEffect(() => {
-    // Check if user prefers dark mode
-    const isDark = localStorage.getItem("theme") === "dark" || 
-      (!localStorage.getItem("theme") && window.matchMedia("(prefers-color-scheme: dark)").matches);
+    // Check if user prefers dark mode from localStorage or system preference
+    const storedTheme = localStorage.getItem("theme");
+    const isDark = 
+      storedTheme === "dark" || 
+      (!storedTheme && window.matchMedia("(prefers-color-scheme: dark)").matches);
     
+    // Set theme as soon as component mounts to avoid flash
     setIsDarkMode(isDark);
-    applyTheme(isDark);
+    
+    // Apply the theme immediately
+    if (isDark) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+    
+    // Store in localStorage to persist across refreshes
+    if (!storedTheme) {
+      localStorage.setItem("theme", isDark ? "dark" : "light");
+    }
   }, []);
 
   const toggleTheme = () => {
     setIsDarkMode(prev => {
       const newMode = !prev;
-      applyTheme(newMode);
+      
+      if (newMode) {
+        document.documentElement.classList.add("dark");
+        localStorage.setItem("theme", "dark");
+      } else {
+        document.documentElement.classList.remove("dark");
+        localStorage.setItem("theme", "light");
+      }
+      
       return newMode;
     });
-  };
-
-  const applyTheme = (dark: boolean) => {
-    if (dark) {
-      document.documentElement.classList.add("dark");
-      localStorage.setItem("theme", "dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-      localStorage.setItem("theme", "light");
-    }
   };
 
   return (
