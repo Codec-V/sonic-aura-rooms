@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState } from 'react';
 import { User, ChatMessage } from '@/components/SpeakersGrid';
 import { roomUsers } from '@/services/mockData';
@@ -92,9 +93,9 @@ export const RoomProvider: React.FC<RoomProviderProps> = ({ roomId, children }) 
     
     const newMessage: ChatMessage = {
       id: Date.now(),
-      userId: currentUser.id,
+      user: currentUser.username,
       text,
-      timestamp: new Date()
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     };
     
     setMessages(prev => [...prev, newMessage]);
