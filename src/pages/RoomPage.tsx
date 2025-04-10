@@ -1,12 +1,11 @@
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { getRoom } from '@/services/mockData';
 import { RoomProvider, useRoomContext } from '@/context/RoomContext';
-import SpeakersGrid, { ChatMessage } from '@/components/SpeakersGrid';
+import SpeakersGrid from '@/components/SpeakersGrid';
 import { 
   Clock, 
   Users, 
@@ -18,7 +17,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 import RoomControls from '@/components/RoomControls';
 import RoomSidebar from '@/components/RoomSidebar';
 
-const RoomStats = ({ room }) => {
+const RoomStats = () => {
+  const { roomData } = useRoomContext();
+  
+  if (!roomData) return null;
+  
   return (
     <motion.div 
       className="bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm rounded-xl p-4 shadow-sm"
@@ -36,7 +39,7 @@ const RoomStats = ({ room }) => {
           <Clock className="h-5 w-5 text-slate-500" />
           <div>
             <div className="text-xs text-slate-500">Duration</div>
-            <div className="font-medium">{room.activeTime}</div>
+            <div className="font-medium">{roomData.activeTime}</div>
           </div>
         </motion.div>
         <motion.div 
@@ -47,7 +50,7 @@ const RoomStats = ({ room }) => {
           <Users className="h-5 w-5 text-slate-500" />
           <div>
             <div className="text-xs text-slate-500">Total Participants</div>
-            <div className="font-medium">{room.participants.speakers + room.participants.listeners}</div>
+            <div className="font-medium">{roomData.participants.speakers + roomData.participants.listeners}</div>
           </div>
         </motion.div>
         <motion.div 
@@ -58,7 +61,7 @@ const RoomStats = ({ room }) => {
           <Mic className="h-5 w-5 text-slate-500" />
           <div>
             <div className="text-xs text-slate-500">Speakers</div>
-            <div className="font-medium">{room.participants.speakers}</div>
+            <div className="font-medium">{roomData.participants.speakers}</div>
           </div>
         </motion.div>
         <motion.div 
@@ -79,8 +82,8 @@ const RoomStats = ({ room }) => {
 
 const RecommendedRooms = () => {
   const rooms = [
-    { id: '2', title: 'Lo-fi Beats & Chill Vibes', category: 'Music', participants: 130 },
-    { id: '3', title: 'Digital Art Masterclass', category: 'Art', participants: 60 }
+    { id: '3', title: 'Digital Art Masterclass', category: 'Art', participants: 60 },
+    { id: '4', title: 'Gaming Tournament Strategies', category: 'Gaming', participants: 94 }
   ];
   
   return (
@@ -122,11 +125,10 @@ const RecommendedRooms = () => {
 };
 
 const TopMembers = () => {
-  const members = [
-    { id: 1, name: 'Alex Turner', role: 'Host', avatar: null },
-    { id: 2, name: 'Maya Johnson', role: 'Speaker', avatar: null },
-    { id: 3, name: 'Ethan Zhang', role: 'Speaker', avatar: null }
-  ];
+  const { users } = useRoomContext();
+  const hosts = users.filter(user => user.role === 'host');
+  const speakers = users.filter(user => user.role === 'speaker');
+  const topMembers = [...hosts, ...speakers.slice(0, 2)];
   
   return (
     <motion.div 
@@ -137,7 +139,7 @@ const TopMembers = () => {
     >
       <h3 className="text-lg font-medium mb-3">Top Contributors</h3>
       <div className="space-y-3">
-        {members.map((member, i) => (
+        {topMembers.map((member, i) => (
           <motion.div 
             key={member.id} 
             className="flex items-center gap-3"
@@ -147,11 +149,11 @@ const TopMembers = () => {
             whileHover={{ x: 5 }}
           >
             <div className="bg-gradient-to-br from-sonic-blue to-sonic-indigo text-white h-10 w-10 rounded-full flex items-center justify-center text-sm font-medium">
-              {member.name.split(' ').map(n => n[0]).join('')}
+              {member.username.split(' ').map(n => n[0]).join('')}
             </div>
             <div>
-              <div className="font-medium">{member.name}</div>
-              <div className="text-xs text-slate-500">{member.role}</div>
+              <div className="font-medium">{member.username}</div>
+              <div className="text-xs text-slate-500">{member.role === 'host' ? 'Host' : 'Speaker'}</div>
             </div>
           </motion.div>
         ))}
@@ -164,11 +166,10 @@ const RoomContent = () => {
   const { roomId } = useParams<{ roomId: string }>();
   const navigate = useNavigate();
   const { toast } = useToast();
-  
-  const room = getRoom(roomId || "");
+  const { roomData } = useRoomContext();
   
   useEffect(() => {
-    if (!room) {
+    if (!roomData) {
       toast({
         title: "Room not found",
         description: "The room you're looking for doesn't exist.",
@@ -176,9 +177,9 @@ const RoomContent = () => {
       });
       navigate('/');
     }
-  }, [room, navigate, toast]);
+  }, [roomData, navigate, toast]);
   
-  if (!room) return null;
+  if (!roomData) return null;
   
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 dark:from-sonic-dark dark:to-sonic-dark-purple pt-20 pb-24">
@@ -200,24 +201,24 @@ const RoomContent = () => {
                   <div>
                     <div className="flex items-center gap-2 mb-2">
                       <Badge variant="outline" className="bg-sonic-purple/10 text-sonic-purple dark:bg-sonic-purple/20 dark:text-sonic-teal">
-                        {room.category}
+                        {roomData.category}
                       </Badge>
                       <span className="text-sm text-slate-500 dark:text-slate-400">
-                        {room.activeTime} active
+                        {roomData.activeTime} active
                       </span>
                     </div>
                     
-                    <h1 className="text-2xl font-bold sonic-gradient-text">{room.title}</h1>
+                    <h1 className="text-2xl font-bold sonic-gradient-text">{roomData.title}</h1>
                   </div>
                   
                   <div className="flex items-center gap-2">
                     <div className="flex items-center gap-1 text-sm text-slate-500 dark:text-slate-400">
                       <Mic className="h-4 w-4" />
-                      <span>{room.participants.speakers}</span>
+                      <span>{roomData.participants.speakers}</span>
                     </div>
                     <div className="flex items-center gap-1 text-sm text-slate-500 dark:text-slate-400">
                       <Users className="h-4 w-4" />
-                      <span>{room.participants.listeners}</span>
+                      <span>{roomData.participants.listeners}</span>
                     </div>
                   </div>
                 </div>
@@ -228,7 +229,7 @@ const RoomContent = () => {
           </div>
           
           <div className="space-y-6">
-            <RoomStats room={room} />
+            <RoomStats />
             <TopMembers />
             <RecommendedRooms />
           </div>

@@ -1,7 +1,7 @@
 
 import React, { createContext, useContext, useState } from 'react';
 import { User, ChatMessage } from '@/components/SpeakersGrid';
-import { roomUsers } from '@/services/mockData';
+import { roomUsers, getRoom } from '@/services/mockData';
 import { useToast } from '@/hooks/use-toast';
 
 interface RoomContextType {
@@ -16,6 +16,7 @@ interface RoomContextType {
   raiseHand: () => void;
   lowerHand: () => void;
   leaveRoom: () => void;
+  roomData: any;
 }
 
 const RoomContext = createContext<RoomContextType | undefined>(undefined);
@@ -39,6 +40,7 @@ export const RoomProvider: React.FC<RoomProviderProps> = ({ roomId, children }) 
   const [isHandRaised, setIsHandRaised] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [activeSidebarPanel, setActiveSidebarPanel] = useState<'chat' | 'participants' | 'info' | null>(null);
+  const roomData = getRoom(roomId);
   
   const [currentUser, setCurrentUser] = useState<User | null>(() => {
     const listeners = users.filter(user => user.role === 'listener');
@@ -115,7 +117,8 @@ export const RoomProvider: React.FC<RoomProviderProps> = ({ roomId, children }) 
     toggleMute,
     raiseHand,
     lowerHand,
-    leaveRoom
+    leaveRoom,
+    roomData
   };
   
   return (
