@@ -9,6 +9,8 @@ interface RoomContextType {
   currentUser: User | null;
   isHandRaised: boolean;
   messages: ChatMessage[];
+  activeSidebarPanel: 'chat' | 'participants' | 'info' | null;
+  setActiveSidebarPanel: (panel: 'chat' | 'participants' | 'info' | null) => void;
   sendMessage: (text: string) => void;
   toggleMute: () => void;
   raiseHand: () => void;
@@ -36,6 +38,7 @@ export const RoomProvider: React.FC<RoomProviderProps> = ({ roomId, children }) 
   const [users, setUsers] = useState<User[]>(roomUsers[roomId] || []);
   const [isHandRaised, setIsHandRaised] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [activeSidebarPanel, setActiveSidebarPanel] = useState<'chat' | 'participants' | 'info' | null>(null);
   
   const [currentUser, setCurrentUser] = useState<User | null>(() => {
     const listeners = users.filter(user => user.role === 'listener');
@@ -106,6 +109,8 @@ export const RoomProvider: React.FC<RoomProviderProps> = ({ roomId, children }) 
     currentUser,
     isHandRaised,
     messages,
+    activeSidebarPanel,
+    setActiveSidebarPanel,
     sendMessage,
     toggleMute,
     raiseHand,
