@@ -1,9 +1,9 @@
 
 import React from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Moon, Sun, Plus, Bell, User, LogOut } from "lucide-react";
+import { Moon, Sun, Plus, Bell, User, LogOut, UserPlus } from "lucide-react";
 import { 
   DropdownMenu,
   DropdownMenuContent,
@@ -14,6 +14,7 @@ import ThemeToggle from "./ThemeToggle";
 
 const MainNav = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const { toast } = useToast();
   
   const handleCreateRoom = () => {
@@ -22,6 +23,10 @@ const MainNav = () => {
       title: "Coming Soon",
       description: "Room creation will be available soon!",
     });
+  };
+
+  const handleCreateAccount = () => {
+    navigate('/create-account');
   };
 
   return (
@@ -51,6 +56,15 @@ const MainNav = () => {
           >
             <Bell className="w-5 h-5" />
             <span className="absolute top-1 right-1 w-2 h-2 bg-sonic-coral rounded-full"></span>
+          </Button>
+          
+          <Button
+            variant="outline"
+            onClick={handleCreateAccount}
+            className="flex items-center gap-2 bg-sonic-blue/10 text-sonic-blue border-sonic-blue/20 hover:bg-sonic-blue/20 transition-all duration-200 rounded-full"
+          >
+            <UserPlus className="w-4 h-4" />
+            <span className="hidden sm:inline">Create Account</span>
           </Button>
           
           <ThemeToggle />
