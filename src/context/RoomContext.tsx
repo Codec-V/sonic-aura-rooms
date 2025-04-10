@@ -1,16 +1,7 @@
-
 import React, { createContext, useContext, useState } from 'react';
-import { User } from '@/components/SpeakersGrid';
+import { User, ChatMessage } from '@/components/SpeakersGrid';
 import { roomUsers } from '@/services/mockData';
 import { useToast } from '@/hooks/use-toast';
-
-// Chat message type
-export type ChatMessage = {
-  id: number;
-  userId: string;
-  text: string;
-  timestamp: Date;
-};
 
 interface RoomContextType {
   users: User[];
@@ -45,7 +36,6 @@ export const RoomProvider: React.FC<RoomProviderProps> = ({ roomId, children }) 
   const [isHandRaised, setIsHandRaised] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   
-  // Mock current user as the first listener for demo purposes
   const [currentUser, setCurrentUser] = useState<User | null>(() => {
     const listeners = users.filter(user => user.role === 'listener');
     return listeners.length > 0 ? { ...listeners[0] } : null;
@@ -62,7 +52,6 @@ export const RoomProvider: React.FC<RoomProviderProps> = ({ roomId, children }) 
       };
     });
     
-    // Update user in the users list
     setUsers(prevUsers => 
       prevUsers.map(user => 
         user.id === currentUser.id 
@@ -92,7 +81,6 @@ export const RoomProvider: React.FC<RoomProviderProps> = ({ roomId, children }) 
   };
   
   const leaveRoom = () => {
-    // This would redirect to home in a real app
     toast({
       title: "Left Room",
       description: "You have left the room",

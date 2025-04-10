@@ -9,8 +9,19 @@ import { Textarea } from '@/components/ui/textarea';
 import { useRoomContext } from '@/context/RoomContext';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
+// Export the User interface for other components to use
+export interface User {
+  id: string;
+  username: string;
+  isMuted: boolean;
+  isSpeaking: boolean;
+  isHost: boolean;
+  role: 'host' | 'speaker' | 'listener';
+  avatarUrl?: string;
+}
+
 // Enhanced chat message type for more features
-type ChatMessage = {
+export interface ChatMessage {
   id: number;
   user: string;
   text: string;
@@ -18,7 +29,7 @@ type ChatMessage = {
   timestamp: string;
   likes?: number;
   isCurrentUser?: boolean;
-};
+}
 
 const SpeakersGrid = () => {
   const [message, setMessage] = useState('');

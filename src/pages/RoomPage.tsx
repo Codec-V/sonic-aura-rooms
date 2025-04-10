@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -5,7 +6,7 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { getRoom, getRoomUsers } from '@/services/mockData';
 import { RoomProvider, useRoomContext } from '@/context/RoomContext';
-import SpeakersGrid from '@/components/SpeakersGrid';
+import SpeakersGrid, { ChatMessage } from '@/components/SpeakersGrid';
 import { 
   ArrowLeft, Mic, MicOff, Hand, Users, Share2, MessageSquare, Clock, 
   Info, ChevronDown, ChevronUp, Heart, ChevronRight, Send, Smile, 
