@@ -15,6 +15,8 @@ import { useToast } from '@/hooks/use-toast';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { motion } from 'framer-motion';
+import UserAvatar from '@/components/UserAvatar';
 
 const RoomControls = () => {
   const { currentUser, isHandRaised, toggleMute, raiseHand, lowerHand, leaveRoom } = useRoomContext();
@@ -85,17 +87,6 @@ const RoomControls = () => {
   );
 };
 
-// Enhanced chat message type for more features
-type ChatMessage = {
-  id: number;
-  user: string;
-  text: string;
-  avatar?: string;
-  timestamp: string;
-  likes?: number;
-  isCurrentUser?: boolean;
-};
-
 const ChatSection = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [message, setMessage] = useState('');
@@ -135,7 +126,6 @@ const ChatSection = () => {
     if (message.trim()) {
       setIsTyping(true);
       
-      // Simulate delay for typing animation
       setTimeout(() => {
         const newMessage: ChatMessage = {
           id: messages.length + 1,
@@ -149,7 +139,6 @@ const ChatSection = () => {
         setMessage('');
         setIsTyping(false);
         
-        // Simulate an automatic response after a brief delay
         simulateReply();
       }, 500);
     }
@@ -321,6 +310,170 @@ const ChatSection = () => {
           </div>
         </div>
       </div>
+    </div>
+  );
+};
+
+const SpeakersDisplay = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const { users } = useRoomContext();
+  
+  const hosts = users.filter(user => user.role === 'host');
+  const speakers = users.filter(user => user.role === 'speaker');
+  
+  const containerVariants = {
+    hidden: { opacity: 0, x: 100 },
+    visible: {
+      opacity: 1,
+      x: 0,
+      transition: {
+        duration: 0.3,
+        staggerChildren: 0.1
+      }
+    }
+  };
+  
+  const itemVariants = {
+    hidden: { opacity: 0, y: 10 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { type: "spring", stiffness: 100 }
+    }
+  };
+  
+  return (
+    <div className="fixed right-0 bottom-24 top-20 w-full md:w-80 transform transition-transform duration-300 ease-in-out z-30"
+         style={{ transform: isOpen ? 'translateX(0)' : 'translateX(100%)' }}>
+      <div className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-10 bg-white dark:bg-slate-800 shadow-md rounded-l-lg">
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          onClick={() => setIsOpen(!isOpen)}
+          className={`h-20 w-10 rounded-l-lg rounded-r-none transition-all duration-300 ${isOpen ? 'bg-primary/10' : 'hover:bg-primary/5'}`}
+        >
+          {isOpen ? (
+            <ChevronRight className="h-5 w-5 animate-pulse" />
+          ) : (
+            <div className="relative">
+              <Users className="h-5 w-5" />
+              <span className="absolute -top-1 -right-1 bg-primary text-white text-xs rounded-full h-4 w-4 flex items-center justify-center animate-bounce">
+                {hosts.length + speakers.length}
+              </span>
+            </div>
+          )}
+        </Button>
+      </div>
+      
+      <motion.div 
+        className="h-full bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm shadow-lg flex flex-col"
+        variants={containerVariants}
+        initial="hidden"
+        animate={isOpen ? "visible" : "hidden"}
+      >
+        <div className="p-4 border-b dark:border-slate-700">
+          <h3 className="font-medium flex items-center">
+            <Users className="h-4 w-4 mr-2 text-primary" />
+            Active Speakers
+            <Badge variant="outline" className="ml-2 bg-sonic-mint/10 text-sonic-mint dark:bg-sonic-mint/20 dark:text-sonic-mint">
+              {hosts.length + speakers.length}
+            </Badge>
+          </h3>
+        </div>
+        
+        {hosts.length > 0 && (
+          <div className="p-4 border-b dark:border-slate-700">
+            <h4 className="text-sm font-medium mb-3 text-sonic-gold">Hosts</h4>
+            <motion.div 
+              className="space-y-3"
+              variants={containerVariants}
+            >
+              {hosts.map(user => (
+                <motion.div 
+                  key={user.id} 
+                  className="flex items-center gap-3 p-2 rounded-lg hover:bg-white/50 dark:hover:bg-slate-700/50 transition-colors"
+                  variants={itemVariants}
+                >
+                  <div className="relative">
+                    <UserAvatar
+                      username={user.username}
+                      avatarUrl={user.avatarUrl}
+                      isMuted={user.isMuted}
+                      isSpeaking={user.isSpeaking}
+                      isHost={user.isHost}
+                      size="sm"
+                    />
+                    {user.isSpeaking && (
+                      <span className="absolute -top-1 -right-1 bg-green-500 h-3 w-3 rounded-full border-2 border-white dark:border-slate-800"></span>
+                    )}
+                  </div>
+                  
+                  <div>
+                    <div className="font-medium text-sm">{user.username}</div>
+                    <div className="text-xs text-slate-500 flex items-center gap-1">
+                      {user.isMuted ? (
+                        <span className="text-red-400 flex items-center">
+                          <MicOff className="h-3 w-3 mr-1" /> Muted
+                        </span>
+                      ) : (
+                        <span className="text-green-400 flex items-center">
+                          <Mic className="h-3 w-3 mr-1" /> Speaking
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </motion.div>
+          </div>
+        )}
+        
+        {speakers.length > 0 && (
+          <div className="p-4 flex-grow overflow-auto">
+            <h4 className="text-sm font-medium mb-3 text-sonic-blue">Speakers</h4>
+            <motion.div 
+              className="space-y-3"
+              variants={containerVariants}
+            >
+              {speakers.map(user => (
+                <motion.div 
+                  key={user.id} 
+                  className="flex items-center gap-3 p-2 rounded-lg hover:bg-white/50 dark:hover:bg-slate-700/50 transition-colors"
+                  variants={itemVariants}
+                >
+                  <div className="relative">
+                    <UserAvatar
+                      username={user.username}
+                      avatarUrl={user.avatarUrl}
+                      isMuted={user.isMuted}
+                      isSpeaking={user.isSpeaking}
+                      size="sm"
+                    />
+                    {user.isSpeaking && (
+                      <span className="absolute -top-1 -right-1 bg-green-500 h-3 w-3 rounded-full border-2 border-white dark:border-slate-800"></span>
+                    )}
+                  </div>
+                  
+                  <div>
+                    <div className="font-medium text-sm">{user.username}</div>
+                    <div className="text-xs text-slate-500 flex items-center gap-1">
+                      {user.isMuted ? (
+                        <span className="text-red-400 flex items-center">
+                          <MicOff className="h-3 w-3 mr-1" /> Muted
+                        </span>
+                      ) : (
+                        <span className="text-green-400 flex items-center">
+                          <Mic className="h-3 w-3 mr-1" /> Active
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </motion.div>
+          </div>
+        )}
+      </motion.div>
     </div>
   );
 };
@@ -520,7 +673,7 @@ const RoomContent = () => {
             
             <RoomInfoAccordion room={room} />
             
-            <SpeakersGrid users={users} />
+            <SpeakersGrid />
           </div>
           
           <div className="space-y-6">
@@ -532,7 +685,7 @@ const RoomContent = () => {
       </main>
       
       <RoomControls />
-      <ChatSection />
+      <SpeakersDisplay />
     </div>
   );
 };

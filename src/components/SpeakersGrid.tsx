@@ -1,35 +1,129 @@
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import UserAvatar from './UserAvatar';
 import { Badge } from '@/components/ui/badge';
-import { PlusCircle, Mic, Users, Crown } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { Send, Smile, PaperclipIcon, Image, ThumbsUp, Loader2, MessageSquare, RefreshCw } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
+import { useRoomContext } from '@/context/RoomContext';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
-export interface User {
-  id: string;
-  username: string;
-  avatarUrl?: string;
-  isMuted: boolean;
-  isSpeaking: boolean;
-  isHost: boolean;
-  role: 'host' | 'speaker' | 'listener';
-}
+// Enhanced chat message type for more features
+type ChatMessage = {
+  id: number;
+  user: string;
+  text: string;
+  avatar?: string;
+  timestamp: string;
+  likes?: number;
+  isCurrentUser?: boolean;
+};
 
-interface SpeakersGridProps {
-  users: User[];
-}
+const SpeakersGrid = () => {
+  const [message, setMessage] = useState('');
+  const [isTyping, setIsTyping] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const { currentUser } = useRoomContext();
+  
+  const [messages, setMessages] = useState<ChatMessage[]>([
+    { 
+      id: 1, 
+      user: 'Maya Johnson', 
+      text: 'Has anyone tried the new audio processing software?', 
+      timestamp: '10:32 AM',
+      likes: 2
+    },
+    { 
+      id: 2, 
+      user: 'Alex Turner', 
+      text: "Yes, I've been testing it for a few days. The noise cancellation is impressive!", 
+      timestamp: '10:35 AM',
+      likes: 3
+    },
+    { 
+      id: 3, 
+      user: 'Ethan Zhang', 
+      text: "I'd love to hear more about your experience with it.", 
+      timestamp: '10:38 AM' 
+    },
+    { 
+      id: 4, 
+      user: 'Sarah Miller', 
+      text: "I'm planning to use it for our next podcast episode. Any tips for optimal settings?", 
+      timestamp: '10:45 AM' 
+    }
+  ]);
+  
+  // Scroll to bottom when messages change
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+  
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+  
+  const handleSendMessage = () => {
+    if (message.trim()) {
+      setIsTyping(true);
+      
+      // Simulate delay for typing animation
+      setTimeout(() => {
+        const newMessage: ChatMessage = {
+          id: messages.length + 1,
+          user: currentUser?.username || 'You',
+          text: message,
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          isCurrentUser: true
+        };
+        
+        setMessages([...messages, newMessage]);
+        setMessage('');
+        setIsTyping(false);
+        
+        // Simulate an automatic response after a brief delay
+        simulateReply();
+      }, 500);
+    }
+  };
+  
+  const simulateReply = () => {
+    const responses = [
+      "That's a great point!",
+      "I agree with what you're saying.",
+      "Interesting perspective, thanks for sharing.",
+      "Has anyone else experienced this?",
+      "I'd like to add to that discussion point."
+    ];
+    
+    const users = ["Maya Johnson", "Alex Turner", "Ethan Zhang", "Sarah Miller"];
+    
+    setTimeout(() => {
+      const newReply: ChatMessage = {
+        id: messages.length + 2,
+        user: users[Math.floor(Math.random() * users.length)],
+        text: responses[Math.floor(Math.random() * responses.length)],
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      };
+      
+      setMessages(prev => [...prev, newReply]);
+    }, 2000);
+  };
+  
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSendMessage();
+    }
+  };
+  
+  const handleLikeMessage = (messageId: number) => {
+    setMessages(prev => prev.map(msg => 
+      msg.id === messageId ? { ...msg, likes: (msg.likes || 0) + 1 } : msg
+    ));
+  };
 
-const SpeakersGrid = ({ users }: SpeakersGridProps) => {
-  // Filter hosts and speakers
-  const hosts = users.filter(user => user.role === 'host');
-  const speakers = users.filter(user => user.role === 'speaker');
-  const listeners = users.filter(user => user.role === 'listener');
-  
-  const [showAllListeners, setShowAllListeners] = useState(false);
-  
-  // Display limited listeners initially
-  const displayedListeners = showAllListeners ? listeners : listeners.slice(0, 6);
-  
   // Animation variants
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -41,163 +135,124 @@ const SpeakersGrid = ({ users }: SpeakersGridProps) => {
     }
   };
   
-  const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: { type: "spring", stiffness: 100 }
-    }
-  };
-  
   return (
     <div className="flex flex-col items-center space-y-8 py-8">
-      {/* Stats row */}
-      <div className="w-full grid grid-cols-3 gap-4 mb-6">
-        <div className="bg-white/30 dark:bg-slate-800/40 backdrop-blur-sm p-4 rounded-xl shadow-sm flex items-center space-x-3">
-          <div className="bg-sonic-gold/20 p-2 rounded-full">
-            <Crown className="h-5 w-5 text-sonic-gold" />
+      <div className="w-full bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm rounded-xl shadow-sm p-4 mb-4">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <MessageSquare className="h-5 w-5 text-sonic-blue" />
+            <h2 className="text-lg font-semibold">Room Chat</h2>
           </div>
-          <div>
-            <div className="text-sm text-slate-500 dark:text-slate-400">Hosts</div>
-            <div className="text-xl font-bold">{hosts.length}</div>
-          </div>
-        </div>
-        
-        <div className="bg-white/30 dark:bg-slate-800/40 backdrop-blur-sm p-4 rounded-xl shadow-sm flex items-center space-x-3">
-          <div className="bg-sonic-blue/20 p-2 rounded-full">
-            <Mic className="h-5 w-5 text-sonic-blue" />
-          </div>
-          <div>
-            <div className="text-sm text-slate-500 dark:text-slate-400">Speakers</div>
-            <div className="text-xl font-bold">{speakers.length}</div>
-          </div>
-        </div>
-        
-        <div className="bg-white/30 dark:bg-slate-800/40 backdrop-blur-sm p-4 rounded-xl shadow-sm flex items-center space-x-3">
-          <div className="bg-sonic-coral/20 p-2 rounded-full">
-            <Users className="h-5 w-5 text-sonic-coral" />
-          </div>
-          <div>
-            <div className="text-sm text-slate-500 dark:text-slate-400">Listeners</div>
-            <div className="text-xl font-bold">{listeners.length}</div>
-          </div>
-        </div>
-      </div>
-      
-      {/* Hosts section with animated badges */}
-      <div className="relative w-full">
-        <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-sonic-gold/20 px-3 py-1 rounded-full">
-          <Badge variant="outline" className="bg-sonic-gold/20 border-sonic-gold text-sonic-gold animate-pulse">
-            Hosts
+          <Badge variant="outline" className="bg-green-500/10 text-green-500 dark:text-green-400">
+            Live
           </Badge>
         </div>
+        
         <motion.div 
-          className="flex flex-wrap justify-center gap-8 bg-white/20 dark:bg-slate-800/20 backdrop-blur-sm p-6 pt-8 rounded-xl shadow-sm"
+          className="h-[400px] overflow-y-auto mb-4 p-2 space-y-4"
           variants={containerVariants}
           initial="hidden"
           animate="visible"
         >
-          {hosts.map(user => (
-            <motion.div key={user.id} variants={itemVariants}>
-              <UserAvatar
-                username={user.username}
-                avatarUrl={user.avatarUrl}
-                isMuted={user.isMuted}
-                isSpeaking={user.isSpeaking}
-                isHost={true}
-                size="lg"
-                className="hover:-translate-y-2 transition-transform duration-300"
-              />
-            </motion.div>
-          ))}
-        </motion.div>
-      </div>
-      
-      {/* Speakers section */}
-      {speakers.length > 0 && (
-        <div className="relative w-full">
-          <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-sonic-blue/20 px-3 py-1 rounded-full">
-            <Badge variant="outline" className="bg-sonic-blue/20 border-sonic-blue text-sonic-blue">
-              Speakers
-            </Badge>
-          </div>
-          <motion.div 
-            className="flex flex-wrap justify-center gap-6 max-w-3xl bg-white/20 dark:bg-slate-800/20 backdrop-blur-sm p-6 pt-8 rounded-xl shadow-sm mx-auto"
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-          >
-            {speakers.map(user => (
-              <motion.div key={user.id} variants={itemVariants}>
-                <UserAvatar
-                  username={user.username}
-                  avatarUrl={user.avatarUrl}
-                  isMuted={user.isMuted}
-                  isSpeaking={user.isSpeaking}
-                  size="md"
-                  className="hover:scale-110 transition-transform duration-300"
-                />
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
-      )}
-      
-      {/* Listeners section */}
-      {listeners.length > 0 && (
-        <div className="relative w-full">
-          <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-sonic-coral/20 px-3 py-1 rounded-full">
-            <Badge variant="outline" className="bg-sonic-coral/20 border-sonic-coral text-sonic-coral">
-              Listeners ({listeners.length})
-            </Badge>
-          </div>
-          <motion.div 
-            className="flex flex-wrap justify-center gap-4 max-w-4xl bg-white/20 dark:bg-slate-800/20 backdrop-blur-sm p-6 pt-8 rounded-xl shadow-sm mx-auto"
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-          >
-            {displayedListeners.map(user => (
-              <motion.div key={user.id} variants={itemVariants}>
-                <UserAvatar
-                  username={user.username}
-                  avatarUrl={user.avatarUrl}
-                  isMuted={true}
-                  size="sm"
-                  className="hover:brightness-110 transition-all duration-300"
-                />
-              </motion.div>
-            ))}
-            
-            {listeners.length > 6 && !showAllListeners && (
+          <AnimatePresence>
+            {messages.map(msg => (
               <motion.div 
-                className="flex items-center justify-center cursor-pointer"
-                onClick={() => setShowAllListeners(true)}
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
+                key={msg.id} 
+                className={`group flex gap-3 max-w-[85%] ${msg.isCurrentUser ? 'ml-auto' : ''}`}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ type: "spring", stiffness: 100 }}
               >
-                <div className="w-10 h-10 rounded-full bg-sonic-blue/20 flex items-center justify-center">
-                  <PlusCircle className="h-5 w-5 text-sonic-blue" />
+                {!msg.isCurrentUser && (
+                  <Avatar className="h-8 w-8 flex-shrink-0">
+                    <AvatarFallback className="bg-gradient-to-br from-sonic-blue to-sonic-indigo text-white text-xs">
+                      {msg.user.split(' ').map(n => n[0]).join('')}
+                    </AvatarFallback>
+                  </Avatar>
+                )}
+                
+                <div>
+                  {!msg.isCurrentUser && (
+                    <div className="text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">{msg.user}</div>
+                  )}
+                  
+                  <div className={`relative group ${
+                    msg.isCurrentUser 
+                      ? 'bg-primary/10 text-primary-foreground rounded-t-lg rounded-l-lg' 
+                      : 'bg-slate-100 dark:bg-slate-700 rounded-t-lg rounded-r-lg'
+                  } p-3`}>
+                    <div className="text-sm">{msg.text}</div>
+                    
+                    <div className="flex items-center justify-between mt-1">
+                      <span className="text-[10px] text-slate-500">{msg.timestamp}</span>
+                      
+                      {!msg.isCurrentUser && (
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                          onClick={() => handleLikeMessage(msg.id)}
+                        >
+                          <ThumbsUp className="h-3 w-3" />
+                          {msg.likes && <span className="ml-1 text-[10px]">{msg.likes}</span>}
+                        </Button>
+                      )}
+                    </div>
+                  </div>
                 </div>
-                <span className="ml-2 text-xs text-sonic-blue font-medium">
-                  +{listeners.length - 6} more
-                </span>
               </motion.div>
-            )}
-            
-            {showAllListeners && (
-              <motion.button
-                className="mt-4 text-sm text-sonic-blue hover:text-sonic-blue/80 transition-colors"
-                onClick={() => setShowAllListeners(false)}
-                variants={itemVariants}
-              >
-                Show less
-              </motion.button>
-            )}
-          </motion.div>
+            ))}
+          </AnimatePresence>
+          
+          {isTyping && (
+            <div className="flex items-center gap-2 text-sm text-slate-500">
+              <Loader2 className="h-3 w-3 animate-spin" />
+              <span>Typing...</span>
+            </div>
+          )}
+          <div ref={messagesEndRef} />
+        </motion.div>
+        
+        <div className="flex flex-col space-y-2">
+          <div className="flex items-center gap-2 mb-2">
+            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full">
+              <Smile className="h-4 w-4 text-slate-500" />
+            </Button>
+            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full">
+              <Image className="h-4 w-4 text-slate-500" />
+            </Button>
+            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full">
+              <PaperclipIcon className="h-4 w-4 text-slate-500" />
+            </Button>
+            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full ml-auto">
+              <RefreshCw className="h-4 w-4 text-slate-500" />
+            </Button>
+          </div>
+          
+          <div className="flex gap-2">
+            <Textarea
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="Type a message..."
+              className="flex-grow resize-none bg-slate-100 dark:bg-slate-700 border-none rounded-xl px-4 py-2 text-sm min-h-[40px] max-h-[120px] focus-visible:ring-1 focus-visible:ring-primary"
+            />
+            <Button 
+              variant="default" 
+              size="icon" 
+              className="rounded-full h-10 w-10 bg-primary hover:bg-primary/90 transition-colors"
+              onClick={handleSendMessage}
+              disabled={!message.trim() || isTyping}
+            >
+              {isTyping ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Send className="h-4 w-4" />
+              )}
+            </Button>
+          </div>
         </div>
-      )}
+      </div>
     </div>
   );
 };
