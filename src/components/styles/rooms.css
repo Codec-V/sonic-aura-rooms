@@ -1,0 +1,21 @@
+.active-speakers-container {
+  /* ... existing styles ... */
+  overflow: auto;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+.active-speakers-container::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+.active-users-list {
+  /* ... existing styles ... */
+  overflow: auto;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+.active-users-list::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}

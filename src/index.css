@@ -236,3 +236,17 @@
 .animate-pulse-ring {
   animation: pulse-ring 1.5s cubic-bezier(0.24, 0.97, 0.81, 1.2) infinite;
 }
+
+/* Fix for scrollbar hiding - more specific selectors to avoid conflicts */
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
+div::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
+}
+
+html, body, div {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}

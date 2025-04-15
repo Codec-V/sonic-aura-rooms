@@ -70,10 +70,6 @@ const UserAvatar = ({
           HOST
         </div>
       )}
-      
-      <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap text-xs font-medium">
-        {username}
-      </div>
     </div>
   );
 };

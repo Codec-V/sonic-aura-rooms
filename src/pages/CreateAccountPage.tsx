@@ -1,248 +1,373 @@
 
 import React, { useState } from 'react';
-import MainNav from '@/components/MainNav';
 import { useNavigate } from 'react-router-dom';
+import MainNav from '@/components/MainNav';
 import { Button } from '@/components/ui/button';
-import { 
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage 
-} from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { 
-  Card, 
-  CardContent, 
-  CardDescription, 
-  CardFooter, 
-  CardHeader, 
-  CardTitle 
-} from '@/components/ui/card';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
+import { ArrowLeft, Loader2, User, Mail, Lock, Check } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { motion } from 'framer-motion';
-import { UserPlus, User, AtSign, KeyRound, ArrowRight } from 'lucide-react';
 
-const formSchema = z.object({
-  username: z.string().min(3, {
-    message: "Username must be at least 3 characters.",
-  }),
-  email: z.string().email({
-    message: "Please enter a valid email address.",
-  }),
-  password: z.string().min(6, {
-    message: "Password must be at least 6 characters.",
-  }),
-});
-
-type FormValues = z.infer<typeof formSchema>;
+// Background animation component for CreateAccountPage
+const CreateAccountBackground = () => {
+  return (
+    <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
+      {/* Gradient orbs */}
+      <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-sonic-mint/30 rounded-full filter blur-[100px] opacity-60 animate-float-slow" />
+      <div className="absolute bottom-0 right-0 w-[600px] h-[600px] bg-sonic-blue/30 rounded-full filter blur-[120px] opacity-50 animate-float-slow-reverse" />
+      
+      {/* Decorative elements */}
+      <div className="absolute top-[25%] right-[10%] w-24 h-24 border-4 border-sonic-mint/20 rounded-lg rotate-12 animate-spin-slow" />
+      <div className="absolute bottom-[30%] left-[15%] w-32 h-32 border-4 border-sonic-blue/20 rounded-full animate-float-medium" />
+      
+      {/* Sound wave lines - Simplified for this page */}
+      <div className="absolute inset-0 flex items-center justify-center opacity-20">
+        <svg width="100%" height="100%" viewBox="0 0 1200 800" preserveAspectRatio="none">
+          {[...Array(5)].map((_, i) => (
+            <motion.path
+              key={i}
+              d={`M 0 ${400 + (i - 2) * 60} Q 300 ${400 + (i - 2) * (i % 2 === 0 ? 80 : -80)} 600 ${400 + (i - 2) * 60} Q 900 ${400 + (i - 2) * (i % 2 === 0 ? -80 : 80)} 1200 ${400 + (i - 2) * 60}`}
+              stroke={i % 3 === 0 ? "#3B82F6" : i % 3 === 1 ? "#10B981" : "#F97316"}
+              strokeWidth="2"
+              fill="none"
+              initial={{ pathLength: 0, opacity: 0 }}
+              animate={{ 
+                pathLength: 1, 
+                opacity: 0.5,
+                d: [
+                  `M 0 ${400 + (i - 2) * 60} Q 300 ${400 + (i - 2) * (i % 2 === 0 ? 80 : -80)} 600 ${400 + (i - 2) * 60} Q 900 ${400 + (i - 2) * (i % 2 === 0 ? -80 : 80)} 1200 ${400 + (i - 2) * 60}`,
+                  `M 0 ${400 + (i - 2) * 60} Q 300 ${400 + (i - 2) * (i % 2 === 0 ? -80 : 80)} 600 ${400 + (i - 2) * 60} Q 900 ${400 + (i - 2) * (i % 2 === 0 ? 80 : -80)} 1200 ${400 + (i - 2) * 60}`,
+                  `M 0 ${400 + (i - 2) * 60} Q 300 ${400 + (i - 2) * (i % 2 === 0 ? 80 : -80)} 600 ${400 + (i - 2) * 60} Q 900 ${400 + (i - 2) * (i % 2 === 0 ? -80 : 80)} 1200 ${400 + (i - 2) * 60}`,
+                ]
+              }}
+              transition={{ 
+                duration: 10 + i * 2, 
+                repeat: Infinity,
+                ease: "easeInOut",
+                times: [0, 0.5, 1]
+              }}
+            />
+          ))}
+        </svg>
+      </div>
+      
+      {/* Floating music notes - Fewer than homepage */}
+      {[...Array(5)].map((_, i) => {
+        const size = 20 + Math.random() * 30;
+        const initialX = Math.random() * 100;
+        const initialY = Math.random() * 100;
+        const duration = 10 + Math.random() * 20;
+        const delay = Math.random() * 5;
+        const rotate = Math.random() * 30 - 15;
+        
+        return (
+          <motion.div
+            key={`note-${i}`}
+            className="absolute text-sonic-mint/40 dark:text-sonic-mint/30 font-bold"
+            style={{
+              fontSize: size,
+              left: `${initialX}%`,
+              top: `${initialY}%`,
+              textShadow: '0 0 5px rgba(0,0,0,0.2)'
+            }}
+            initial={{ opacity: 0, rotate: 0}}
+            animate={{
+              opacity: [0, 0.7, 0],
+              y: -100,
+              rotate: rotate,
+            }}
+            transition={{
+              duration,
+              repeat: Infinity,
+              delay,
+              ease: "easeInOut",
+            }}
+          >
+            {['♪', '♫', '♬', '♩'][Math.floor(Math.random() * 4)]}
+          </motion.div>
+        );
+      })}
+      
+      {/* Floating user icons */}
+      {[...Array(3)].map((_, i) => {
+        const size = 24 + Math.random() * 16;
+        const initialX = 20 + Math.random() * 60; // Keep more centered
+        const initialY = 20 + Math.random() * 60;
+        const duration = 15 + Math.random() * 25;
+        const delay = Math.random() * 10;
+        
+        return (
+          <motion.div
+            key={`icon-${i}`}
+            className="absolute text-sonic-blue/30 dark:text-sonic-blue/20"
+            style={{
+              left: `${initialX}%`,
+              top: `${initialY}%`,
+            }}
+            initial={{ opacity: 0 }}
+            animate={{
+              opacity: [0, 0.5, 0],
+              y: [-20, 20, -20],
+              x: [0, Math.sin(i) * 30, 0],
+              scale: [1, 1.1, 1],
+            }}
+            transition={{
+              duration,
+              repeat: Infinity,
+              delay,
+              ease: "easeInOut",
+            }}
+          >
+            <User size={size} />
+          </motion.div>
+        );
+      })}
+    </div>
+  );
+};
 
 const CreateAccountPage = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
-  const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      username: '',
-      email: '',
-      password: '',
-    },
+  const [userData, setUserData] = useState({
+    fullName: '',
+    username: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+    acceptTerms: false
   });
 
-  const onSubmit = async (data: FormValues) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setUserData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSwitchChange = (name: string, checked: boolean) => {
+    setUserData(prev => ({ ...prev, [name]: checked }));
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Basic validation
+    if (!userData.fullName.trim() || !userData.username.trim() || !userData.email.trim()) {
+      toast({
+        title: "Missing information",
+        description: "Please fill in all required fields",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    if (userData.password !== userData.confirmPassword) {
+      toast({
+        title: "Passwords don't match",
+        description: "Please make sure your passwords match",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    if (!userData.acceptTerms) {
+      toast({
+        title: "Terms not accepted",
+        description: "Please accept the terms and conditions to continue",
+        variant: "destructive"
+      });
+      return;
+    }
+    
     setIsSubmitting(true);
     
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    setIsSubmitting(false);
-    
-    toast({
-      title: "Account created!",
-      description: `Welcome, ${data.username}! Your dummy account has been created.`,
-    });
-    
-    // Redirect to home page after successful account creation
+    // Simulate API call with timeout
     setTimeout(() => {
+      console.log('User data:', userData);
+      
+      toast({
+        title: "Account created!",
+        description: "Your account has been created successfully. Welcome to SonicAura!",
+        variant: "default"
+      });
+      
+      // Navigate to home page or login
       navigate('/');
     }, 1500);
   };
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1
-      }
-    }
-  };
-  
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { type: "spring", stiffness: 300, damping: 25 }
-    }
-  };
-
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-muted dark:from-background dark:to-background/70">
+    <div className="min-h-screen bg-gradient-to-b from-background/80 to-muted/80 dark:from-background/90 dark:to-background/70 overflow-hidden">
+      <CreateAccountBackground />
       <MainNav />
       
-      <main className="container mx-auto px-4 pt-24 pb-16">
+      <main className="container mx-auto px-4 pt-20 pb-16">
+        <Button 
+          variant="ghost" 
+          className="mb-6 pl-0 text-muted-foreground hover:text-foreground"
+          onClick={() => navigate(-1)}
+        >
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Back
+        </Button>
+        
         <motion.div 
           className="max-w-md mx-auto"
-          initial="hidden"
-          animate="visible"
-          variants={containerVariants}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
         >
-          <motion.div variants={itemVariants}>
-            <div className="flex items-center justify-center mb-8">
-              <div className="bg-sonic-blue/10 p-6 rounded-full">
-                <UserPlus className="h-10 w-10 text-sonic-blue" />
-              </div>
-            </div>
-            
-            <Card className="border-slate-200 dark:border-slate-700/50 shadow-lg">
-              <CardHeader>
-                <CardTitle className="text-2xl font-bold text-center">Create a Dummy Account</CardTitle>
-                <CardDescription className="text-center">
-                  Fill in the details below to create your demo account
-                </CardDescription>
-              </CardHeader>
-              
-              <CardContent>
-                <Form {...form}>
-                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                    <motion.div variants={itemVariants}>
-                      <FormField
-                        control={form.control}
-                        name="username"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Username</FormLabel>
-                            <div className="relative">
-                              <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-                              <FormControl>
-                                <Input 
-                                  placeholder="Enter your username" 
-                                  className="pl-10"
-                                  {...field} 
-                                />
-                              </FormControl>
-                            </div>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </motion.div>
-                    
-                    <motion.div variants={itemVariants}>
-                      <FormField
-                        control={form.control}
-                        name="email"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Email</FormLabel>
-                            <div className="relative">
-                              <AtSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-                              <FormControl>
-                                <Input 
-                                  type="email" 
-                                  placeholder="Enter your email" 
-                                  className="pl-10"
-                                  {...field} 
-                                />
-                              </FormControl>
-                            </div>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </motion.div>
-                    
-                    <motion.div variants={itemVariants}>
-                      <FormField
-                        control={form.control}
-                        name="password"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Password</FormLabel>
-                            <div className="relative">
-                              <KeyRound className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-                              <FormControl>
-                                <Input 
-                                  type="password" 
-                                  placeholder="Create a password" 
-                                  className="pl-10"
-                                  {...field} 
-                                />
-                              </FormControl>
-                            </div>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </motion.div>
-                    
-                    <motion.div 
-                      variants={itemVariants}
-                      whileHover={{ scale: 1.03 }}
-                      whileTap={{ scale: 0.97 }}
-                    >
-                      <Button 
-                        type="submit" 
-                        className="w-full bg-sonic-blue hover:bg-sonic-blue/90 text-white py-6 h-auto rounded-full btn-bounce btn-shine relative overflow-hidden"
-                        disabled={isSubmitting}
-                      >
-                        {isSubmitting ? (
-                          <div className="flex items-center">
-                            <span className="animate-spin mr-2">
-                              <svg className="h-5 w-5" viewBox="0 0 24 24">
-                                <circle 
-                                  className="opacity-25" 
-                                  cx="12" 
-                                  cy="12" 
-                                  r="10" 
-                                  stroke="currentColor" 
-                                  strokeWidth="4"
-                                  fill="none" 
-                                />
-                                <path 
-                                  className="opacity-75" 
-                                  fill="currentColor" 
-                                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" 
-                                />
-                              </svg>
-                            </span>
-                            Creating Account...
-                          </div>
-                        ) : (
-                          <div className="flex items-center">
-                            Create Account
-                            <ArrowRight className="ml-2 h-5 w-5" />
-                          </div>
-                        )}
-                      </Button>
-                    </motion.div>
-                  </form>
-                </Form>
-              </CardContent>
-              
-              <CardFooter className="flex flex-col space-y-4">
-                <div className="text-center text-sm text-muted-foreground">
-                  This is a demo account for testing purposes only.
+          <motion.div 
+            className="mb-8 text-center"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2, duration: 0.5 }}
+          >
+            <h1 className="text-3xl font-bold mb-2 sonic-gradient-text">Create Account</h1>
+            <p className="text-muted-foreground">Join the SonicAura community today</p>
+          </motion.div>
+          
+          <motion.div 
+            className="glass-card p-8 rounded-xl shadow-lg backdrop-blur-sm bg-background/70"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.3, duration: 0.5 }}
+          >
+            <form onSubmit={handleSubmit} className="space-y-5">
+              <div className="space-y-2">
+                <Label htmlFor="fullName">Full Name</Label>
+                <div className="relative">
+                  <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                  <Input 
+                    id="fullName"
+                    name="fullName"
+                    placeholder="Your full name"
+                    value={userData.fullName}
+                    onChange={handleChange}
+                    required
+                    className="bg-background/50 pl-10"
+                  />
                 </div>
-              </CardFooter>
-            </Card>
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="username">Username</Label>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">@</span>
+                  <Input 
+                    id="username"
+                    name="username"
+                    placeholder="Choose a username"
+                    value={userData.username}
+                    onChange={handleChange}
+                    required
+                    className="bg-background/50 pl-10"
+                  />
+                </div>
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                  <Input 
+                    id="email"
+                    name="email"
+                    type="email"
+                    placeholder="Your email address"
+                    value={userData.email}
+                    onChange={handleChange}
+                    required
+                    className="bg-background/50 pl-10"
+                  />
+                </div>
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="password">Password</Label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                  <Input 
+                    id="password"
+                    name="password"
+                    type="password"
+                    placeholder="Create a password"
+                    value={userData.password}
+                    onChange={handleChange}
+                    required
+                    className="bg-background/50 pl-10"
+                  />
+                </div>
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="confirmPassword">Confirm Password</Label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                  <Input 
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    type="password"
+                    placeholder="Confirm your password"
+                    value={userData.confirmPassword}
+                    onChange={handleChange}
+                    required
+                    className="bg-background/50 pl-10"
+                  />
+                </div>
+              </div>
+              
+              <div className="space-y-2 pt-2">
+                <div className="flex items-center space-x-2">
+                  <Switch 
+                    id="acceptTerms" 
+                    checked={userData.acceptTerms}
+                    onCheckedChange={(checked) => handleSwitchChange('acceptTerms', checked)}
+                  />
+                  <Label htmlFor="acceptTerms" className="text-sm">
+                    I agree to the Terms of Service and Privacy Policy
+                  </Label>
+                </div>
+              </div>
+              
+              <Button 
+                type="submit"
+                className="w-full bg-sonic-blue hover:bg-sonic-blue/90 text-white btn-bounce mt-4"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Creating Account...
+                  </>
+                ) : (
+                  <>
+                    <Check className="mr-2 h-4 w-4" />
+                    Create Account
+                  </>
+                )}
+              </Button>
+            </form>
+          </motion.div>
+          
+          <motion.div 
+            className="mt-6 text-center"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.6, duration: 0.5 }}
+          >
+            <p className="text-sm text-muted-foreground">
+              Already have an account?{" "}
+              <Button 
+                variant="link" 
+                className="p-0 text-sonic-blue"
+                onClick={() => navigate('/login')}
+              >
+                Log in
+              </Button>
+            </p>
           </motion.div>
         </motion.div>
       </main>
